@@ -213,6 +213,8 @@ int main(){
 
         if(won){
             mvprintw(11, 30, "nice job");
+            mvprintw(12, 22, "Press ESC to exit. Any key to play again.");
+            mvprintw(13, 22, "Press 'i' to play on impossible mode...");
         }else{
             std::string text = "You suck. The word was: " + word;
             mvprintw(11, 22, text.c_str());
