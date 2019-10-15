@@ -127,6 +127,8 @@ int reveal(std::vector<letter> &letters, char guess, std::vector<letter> &alphab
     return -1;
 }
 
+/* this function figures out what to do once a guess is made. The, it updates
+    the screen to display the correct thing */
 void update(char screen[HEIGHT][WIDTH], std::vector<letter> &letters, char guess,
                 std::vector<letter> &alphabet, std::vector<body_part> &body_parts,
                 int* num_wrong){
@@ -177,35 +179,49 @@ int main(){
     srand(time(NULL));
 
     char screen[HEIGHT][WIDTH];
+    char cont;
+    while(cont != 27){
+        /* read in the word and screen from the two text files */
+        std::string word = get_word(rand() % 200);
+        read_screen(screen);
 
-    /* read in the word and screen from the two text files */
-    std::string word = get_word(rand() % 200);
-    read_screen(screen);
+        std::vector<letter> letters;
+        std::vector<letter> alphabet;
+        std::vector<body_part> body_parts;
+        int num_wrong = 0;
 
-    std::vector<letter> letters;
-    std::vector<letter> alphabet;
-    std::vector<body_part> body_parts;
-    int num_wrong = 0;
-
-    setup(screen, letters, word, alphabet, body_parts);
-    display(screen);
-
-    char guess;
-    bool won = false;
-    while(guess != 27 && num_wrong < 6 && won == false){
-        guess = getch();
-        update(screen, letters, guess, alphabet, body_parts, &num_wrong);
+        setup(screen, letters, word, alphabet, body_parts);
         display(screen);
-        won = check_win(letters);
-    }
+        if(cont == 'i'){
+            mvprintw(10, 32, "IMPOSSIBLE MODE");
+        }
+        char guess;
+        bool won = false;
+        while(guess != 27 && num_wrong < 6 && won == false){
+            guess = getch();
+            update(screen, letters, guess, alphabet, body_parts, &num_wrong);
+            display(screen);
+            won = check_win(letters);
+            if(cont == 'i'){
+                mvprintw(10, 32, "IMPOSSIBLE MODE");
+            }
+        }
+        if(guess == 27){
+            endwin();
+            return 0;
+        }
 
-    if(won){
-        mvprintw(11, 30, "nice job");
-    }else{
-        std::string text = "You suck. The word was: " + word;
-        mvprintw(11, 22, text.c_str());
+        if(won){
+            mvprintw(11, 30, "nice job");
+        }else{
+            std::string text = "You suck. The word was: " + word;
+            mvprintw(11, 22, text.c_str());
+            mvprintw(12, 22, "Press ESC to exit. Any key to play again.");
+            mvprintw(13, 22, "Press 'i' to play on impossible mode...");
+        }
+        // impossible mode makes it change the word after the first you get one right
+        cont = getch();
     }
-    getch();
     endwin();
 
     return 0;
